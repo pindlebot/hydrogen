@@ -61,7 +61,7 @@ function Message (props) {
   }, [])
 
   const options = React.useMemo(() => {
-    return keyPairs.map(({ label, id }) => ({ label, value: id }))
+    return keyPairs.map(({ userId, id }) => ({ label: userId, value: id }))
   }, [keyPairs])
 
   return (
