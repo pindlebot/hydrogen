@@ -1,0 +1,8 @@
+export const REHYDRATE_STATE = 'REHYDRATE_STATE'
+export const ADD_KEY_PAIR = 'ADD_KEY_PAIR'
+export const SET_KEY_PAIR = 'SET_KEY_PAIR'
+
+export const SUBSCRIBED_ACTIONS = [
+  ADD_KEY_PAIR,
+  SET_KEY_PAIR
+]
