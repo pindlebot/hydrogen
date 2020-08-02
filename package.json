@@ -1,60 +1,36 @@
 {
-  "name": "crypt",
-  "productName": "crypt",
+  "name": "hydrogen",
+  "productName": "hydrogen",
   "version": "1.0.0",
   "description": "My Electron application description",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "scripts": {
-    "dev": "parcel src/index.html --public-url ./",
-    "start": "tsc && electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts ."
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dev": "parcel src/index.html --public-url ./ --out-dir build",
+    "build:ui": "parcel build src/index.html --public-url ./ --out-dir build",
+    "build:electron": "parcel build src/index.ts --out-dir build --target electron"
   },
   "keywords": [],
   "author": {
     "name": "scrollbars",
-    "email": "bgaradner@deloitte.com"
+    "email": "ben@menubar.io"
+  },
+  "build": {
+    "appId": "hydrogen",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "files": [
+      "build/**/!(*.map)"
+    ]
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "crypt"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-runtime": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
-    "@electron-forge/cli": "6.0.0-beta.52",
-    "@electron-forge/maker-deb": "6.0.0-beta.52",
-    "@electron-forge/maker-rpm": "6.0.0-beta.52",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.52",
-    "@electron-forge/maker-zip": "6.0.0-beta.52",
     "@types/electron": "^1.6.10",
     "@types/node": "^12.12.12",
     "@types/openpgp": "^4.4.12",
@@ -63,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "electron": "9.1.1",
+    "electron-builder": "^22.8.0",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.0",
     "parcel-bundler": "^1.12.4",
@@ -72,16 +49,13 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "electron-default-menu": "^1.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "lodash.flowright": "^3.5.0",
-    "menubar": "^9.0.1",
     "openpgp": "^4.10.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
-    "react-use": "^15.3.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "uuid": "^8.3.0"

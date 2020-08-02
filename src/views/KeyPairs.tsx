@@ -1,12 +1,13 @@
 import React from 'react'
-import Layout from '../components/Layout'
 import { IconButton, Toolbar, Paper, List, Button, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { addKeyPair, updateKeyPair, deleteKeyPair } from '../store'
 import flowRight from 'lodash.flowright'
 import { withRouter } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
 import { Delete } from '@material-ui/icons'
+
+import Layout from '../components/Layout'
+import { addKeyPair, updateKeyPair, deleteKeyPair } from '../store'
 
 const useStyles = makeStyles(theme => ({
   toolbar: {
