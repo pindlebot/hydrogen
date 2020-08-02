@@ -36,7 +36,7 @@ function KeyPairs (props) {
         <List>
           {keyPairs.map(keyPair => {
             return (
-              <ListItem button onClick={onEdit(keyPair.id)}>
+              <ListItem button onClick={onEdit(keyPair.id)} key={keyPair.id}>
                 <ListItemText primary={keyPair.userId} secondary={keyPair.id} />
                 <ListItemSecondaryAction>
                   <IconButton onClick={() => deleteKeyPair(keyPair.id)}>

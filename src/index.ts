@@ -15,7 +15,7 @@ const createWindow = () => {
     height: 600,
     titleBarStyle: 'hidden',
     webPreferences: {
-      preload: __dirname + '/preload.js'
+      preload: path.join(process.cwd(), 'assets/preload.js')
     }
   })
 

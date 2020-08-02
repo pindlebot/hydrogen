@@ -17,8 +17,8 @@ function Routes (props) {
   return (
     <HashRouter>
       <Switch>
-        <Route component={Message} path='/' exact />
-        <Route component={KeyPairs} path='/keys' exact />
+        <Route component={KeyPairs} path='/' exact />
+        <Route component={Message} path='/message' exact />
         <Route component={GenerateKeyPair} path='/keys/generate' exact />
         <Route component={EditKeyPair} path='/keys/:id' exact />
       </Switch>

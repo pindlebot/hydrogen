@@ -27,7 +27,7 @@ function KeyPairForm (props) {
 
   const onSave = () => {
     updateKeyPair(state)
-    history.push('/keys')
+    history.push('/')
   }
 
   return (

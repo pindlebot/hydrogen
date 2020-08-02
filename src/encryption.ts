@@ -33,5 +33,9 @@ export async function encrypt ({ message, passphrase, keyPair }) {
 
 export async function generateKeyPair(options) {
   const { key, ...rest } = await openpgp.generateKey(options)
-  return rest
+  const { userIds } = options
+  return {
+    userId: userIds[0],
+    ...rest
+  }
 }

@@ -12,7 +12,10 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "jsx": "react"
+    "jsx": "react",
+    "files": [
+      "./src/types.ts"
+    ]
   },
   "include": [
     "src/**/*"

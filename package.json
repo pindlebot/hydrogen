@@ -7,7 +7,9 @@
   "scripts": {
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "dev": "parcel src/index.html --public-url ./ --out-dir build",
+    "dev:ui": "parcel src/index.html --public-url ./ --out-dir build",
+    "dev:electron": "parcel src/index.ts --out-dir build --target electron",
+    "electron": "electron .",
     "build:ui": "parcel build src/index.html --public-url ./ --out-dir build",
     "build:electron": "parcel build src/index.ts --out-dir build --target electron"
   },
