@@ -3,20 +3,33 @@ import { v4 } from 'uuid'
 import thunk from 'redux-thunk'
 import {
   REHYDRATE_STATE,
-  ADD_KEY_PAIR,
-  SET_KEY_PAIR
+  ADD_PRIVATE_KEY,
+  SET_PRIVATE_KEYS,
+  ADD_PUBLIC_KEY,
+  SET_PUBLIC_KEYS
 } from './actionTypes'
 import localStorageMiddleware from './localStorageMiddleware'
 
-const KEY = 'crypt'
+const KEY = 'hydrogen'
 
-export const addKeyPair = data => ({
-  type: ADD_KEY_PAIR,
+export const addPrivateKey = data => ({
+  type: ADD_PRIVATE_KEY,
   data: {
-    id: v4(),
     userId: '', 
     privateKey: '',
+    keyId: '',
+    fingerprint: '',
+    ...data
+  }
+})
+
+export const addPublicKey = data => ({
+  type: ADD_PUBLIC_KEY,
+  data: {
     publicKey: '',
+    userId: '',
+    keyId: '',
+    fingerprint: '',
     ...data
   }
 })
@@ -26,34 +39,46 @@ export const saveState = () => (dispatch, getState) => {
   window.localStorage.setItem(KEY, JSON.stringify(state))
 }
 
-export const updateKeyPair = (data) => (dispatch, getState) => {
+export const updatePrivateKey = (data) => (dispatch, getState) => {
   const state = getState()
-  const index = state.keyPairs.findIndex(k => k.id === data.id)
-  if (index < 0) {
-    throw new Error('not found')
-  }
-  const keyPairs = [...state.keyPairs]
-  keyPairs[index] = data
+  const privateKeys = { ...state.privateKeys }
+  privateKeys[data.fingerprint] = data
   dispatch({
-    type: SET_KEY_PAIR,
-    data: keyPairs
+    type: SET_PRIVATE_KEYS,
+    data: privateKeys
   })
 }
 
-export const deleteKeyPair = id => (dispatch, getState) => {
+export const updatePublicKey = (data) => (dispatch, getState) => {
   const state = getState()
-  const index = state.keyPairs.findIndex(k => k.id === id)
-  if (index < 0) {
-    return
-  }
-
-  const copy = [...state.keyPairs]
-  copy.splice(index, 1)
+  const publicKeys = { ...state.publicKeys }
+  publicKeys[data.fingerprint] = data
   dispatch({
-    type: SET_KEY_PAIR,
-    data: copy
+    type: SET_PUBLIC_KEYS,
+    data: publicKeys
   })
 }
+
+export const deletePrivateKey = fingerprint => (dispatch, getState) => {
+  const state = getState()
+  const privateKeys = { ...state.privateKeys }
+  delete privateKeys[fingerprint]
+  dispatch({
+    type: SET_PRIVATE_KEYS,
+    data: privateKeys
+  })
+}
+
+export const deletePublicKey = fingerprint => (dispatch, getState) => {
+  const state = getState()
+  const publicKeys = { ...state.publicKeys }
+  delete publicKeys[fingerprint]
+  dispatch({
+    type: SET_PUBLIC_KEYS,
+    data: publicKeys
+  })
+}
+
 
 export const rehydrateState = () => (dispatch, getState) => {
   let serializedState = window.localStorage.getItem(KEY)
@@ -77,7 +102,8 @@ export const rehydrateState = () => (dispatch, getState) => {
 }
 
 export const initialState = {
-  keyPairs: []
+  privateKeys: {},
+  publicKeys: {}
 }
 
 function rootReducer (state = initialState, action) {
@@ -87,15 +113,31 @@ function rootReducer (state = initialState, action) {
         ...state,
         ...action.data
       }
-    case ADD_KEY_PAIR:
+    case ADD_PRIVATE_KEY:
       return {
         ...state,
-        keyPairs: state.keyPairs.concat([action.data])
+        privateKeys: {
+          ...state.privateKeys,
+          [action.data.fingerprint]: action.data
+        }
       }
-    case SET_KEY_PAIR:
+    case ADD_PUBLIC_KEY:
       return {
         ...state,
-        keyPairs: action.data
+        publicKeys: {
+          ...state.publicKeys,
+          [action.data.fingerprint]: action.data
+        }
+      }
+    case SET_PUBLIC_KEYS:
+      return {
+        ...state,
+        pubicKeys: action.data
+      }
+    case SET_PRIVATE_KEYS:
+      return {
+        ...state,
+        privateKeys: action.data
       }
     default:
       return { ...state }

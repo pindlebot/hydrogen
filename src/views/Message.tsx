@@ -7,13 +7,15 @@ import {
   Toolbar,
   Button,
   InputAdornment,
-  IconButton
+  IconButton,
+  Fade
 } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { Autocomplete } from '@material-ui/lab'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
 
 import Layout from '../components/Layout'
+import { RequestEvents, ResponseEvents } from '../fixtures'
 
 const useStyles = makeStyles((theme) => ({
   field: {
@@ -28,14 +30,25 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function Message(props) {
+type MessageProps = {
+  privateKeys: {
+    [key: string]: any
+  },
+  publicKeys: {
+    [key: string]: any
+  }
+}
+
+function Message(props: MessageProps) {
   const classes = useStyles(props)
   const [value, setValue] = React.useState('')
   const [passphrase, setPassphrase] = React.useState('')
   const [keyId, setKeyId] = React.useState('')
+  const [recipientKeyId, setRecipientKeyId] = React.useState('')
+
   const [visible, setVisible] = React.useState(false)
 
-  const { keyPairs } = props
+  const { privateKeys, publicKeys } = props
 
   const isPgpMessage = React.useMemo(() => {
     return value.startsWith('-----BEGIN PGP MESSAGE-----')
@@ -45,23 +58,28 @@ function Message(props) {
 
   const onPassphraseChange = (evt) => setPassphrase(evt.target.value)
 
-  const onClick = (evt) => {
-    const keyPair = keyPairs.find((key) => key.id === keyId)
+  const onClick = (evt: any) => {
+    const privateKey = privateKeys[keyId]
+    const publicKey = publicKeys[recipientKeyId]
     const payload = {
+      passphrase,
       message: value,
-      keyPair,
-      passphrase
+      privateKey: privateKey.privateKey,
+      publicKey: publicKey.publicKey
     }
-
-    const action = isPgpMessage ? 'DECRYPT' : 'ENCRYPT'
+    console.log(payload)
     // @ts-ignore
-    window.ipcRenderer.send('put', JSON.stringify({ action, data: payload }))
+    const eventName = isPgpMessage ? RequestEvents.DECRYPT : RequestEvents.ENCRYPT
+    ;(window as any).ipcRenderer.send(eventName, JSON.stringify(payload))
   }
 
-  const onAutocompleteChange = (evt, value) => {
-    console.log(value)
+  const onSenderChange = (evt, value) => {
     setKeyId(typeof value === 'string' ? value : value.value)
   }
+
+  const onRecipientChange = (evt, value) => {
+    setRecipientKeyId(typeof value === 'string' ? value : value.value)
+  } 
 
   const onData = (event, args) => {
     const { data } = JSON.parse(args)
@@ -70,15 +88,21 @@ function Message(props) {
 
   React.useEffect(() => {
     // @ts-ignore
-    ;(window as any).ipcRenderer.on('data', onData)
+    ;(window as any).ipcRenderer.on(ResponseEvents.DECRYPT, onData)
+    ;(window as any).ipcRenderer.on(ResponseEvents.ENCRYPT, onData)
     return () => {
-      ;(window as any).ipcRenderer.off('data', onData)
+      ;(window as any).ipcRenderer.off(ResponseEvents.DECRYPT, onData)
+      ;(window as any).ipcRenderer.off(ResponseEvents.ENCRYPT, onData)
     }
   }, [])
 
-  const options = React.useMemo(() => {
-    return keyPairs.map(({ userId, id }) => ({ label: userId, value: id }))
-  }, [keyPairs])
+  const senderOptions = React.useMemo(() => {
+    return Object.values(privateKeys).map(({ userId, fingerprint }) => ({ label: userId, value: fingerprint }))
+  }, [privateKeys])
+
+  const recipientOptions = React.useMemo(() => {
+    return Object.values(privateKeys).map(({ userId, fingerprint }) => ({ label: userId, value: fingerprint }))
+  }, [publicKeys])
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault()
@@ -94,7 +118,7 @@ function Message(props) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Autocomplete
-              options={options}
+              options={senderOptions}
               getOptionLabel={(option: any) => option.label}
               renderInput={(params) => (
                 <TextField
@@ -104,7 +128,7 @@ function Message(props) {
                   variant='outlined'
                 />
               )}
-              onChange={onAutocompleteChange}
+              onChange={onSenderChange}
             />
           </Grid>
           <Grid item xs={12}>
@@ -142,6 +166,23 @@ function Message(props) {
               label='Message'
             />
           </Grid>
+          <Fade in={!isPgpMessage}>
+            <Grid item xs={12}>
+              <Autocomplete
+                options={recipientOptions}
+                getOptionLabel={(option: any) => option.label}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label='Recipient'
+                    margin='dense'
+                    variant='outlined'
+                  />
+                )}
+                onChange={onRecipientChange}
+              />
+            </Grid>
+          </Fade>
           <Toolbar className={classes.toolbar}>
             <Button onClick={onClick}>
               {isPgpMessage ? 'Decrypt' : 'Encrypt'}

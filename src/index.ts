@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
-import { decrypt, encrypt, generateKeyPair } from './encryption'
+import { decrypt, encrypt, generateKeyPair, getKeyMetadata } from './encryption'
+import { RequestEvents, ResponseEvents } from './fixtures'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -15,7 +16,7 @@ const createWindow = () => {
     height: 600,
     titleBarStyle: 'hidden',
     webPreferences: {
-      preload: path.join(process.cwd(), 'assets/preload.js')
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -48,23 +49,27 @@ app.on('activate', () => {
   }
 })
 
-const DECRYPT = 'DECRYPT'
-const ENCRYPT = 'ENCRYPT'
-const GENERATE_KEY_PAIR = 'GENERATE_KEY_PAIR'
-
-ipcMain.on('put', async (event, args) => {
-  let data
+ipcMain.on(RequestEvents.DECRYPT, async (event, args) => {
   const payload = JSON.parse(args)
-  switch (payload.action) {
-    case DECRYPT:
-      data = await decrypt(payload.data)
-      break
-    case ENCRYPT:
-      data = await encrypt(payload.data)
-      break
-    case GENERATE_KEY_PAIR:
-      data = await generateKeyPair(payload.data)
-  }
-  event.sender.send('data', JSON.stringify(data))
+  const data = await decrypt(payload)
+  event.sender.send(ResponseEvents.DECRYPT, JSON.stringify(data))
 })
 
+ipcMain.on(RequestEvents.ENCRYPT, async (event, args) => {
+  const payload = JSON.parse(args)
+  const data = await encrypt(payload)
+  event.sender.send(ResponseEvents.ENCRYPT, JSON.stringify(data))
+})
+
+ipcMain.on(RequestEvents.GENERATE_KEY_PAIR, async (event, args) => {
+  const payload = JSON.parse(args)
+  const data = await generateKeyPair(payload)
+  event.sender.send(ResponseEvents.GENERATE_KEY_PAIR, JSON.stringify(data))
+})
+
+ipcMain.on(RequestEvents.GET_METADATA, async (event, args) => {
+  const payload = JSON.parse(args)
+  console.log(payload)
+  const data = await getKeyMetadata(payload)
+  event.sender.send(ResponseEvents.GET_METADATA, JSON.stringify(data))
+})

@@ -6,10 +6,11 @@ import { Provider, ReactReduxContext } from 'react-redux'
 
 import theme from './config/theme'
 import Message from './views/Message'
-import KeyPairs from './views/KeyPairs'
+import Keys from './views/Keys'
 import EditKeyPair from './views/EditKeyPair'
 import GenerateKeyPair from './views/GenerateKeyPair'
-
+import CreateKeyPair from './views/CreateKeyPair'
+import ImportPublicKey from './views/ImportPublicKey'
 import { Switch, HashRouter, Route } from 'react-router-dom'
 import { store } from './store'
 
@@ -17,9 +18,11 @@ function Routes (props) {
   return (
     <HashRouter>
       <Switch>
-        <Route component={KeyPairs} path='/' exact />
+        <Route component={Keys} path='/' exact />
         <Route component={Message} path='/message' exact />
         <Route component={GenerateKeyPair} path='/keys/generate' exact />
+        <Route component={CreateKeyPair} path='/keys/create' exact />
+        <Route component={ImportPublicKey} path='/keys/import' exact />
         <Route component={EditKeyPair} path='/keys/:id' exact />
       </Switch>
     </HashRouter>

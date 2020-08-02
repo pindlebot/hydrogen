@@ -56,7 +56,7 @@ function Layout(props) {
       <Box p={4}>{children}</Box>
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={onClose}>
         <MenuItem onClick={onNavigate('message')}>Encrypt/Decrypt</MenuItem>
-        <MenuItem onClick={onNavigate('')}>Key Pairs</MenuItem>
+        <MenuItem onClick={onNavigate('')}>Keys</MenuItem>
       </Menu>
     </>
   )

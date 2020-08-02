@@ -12,9 +12,10 @@ import { connect } from 'react-redux'
 import flowRight from 'lodash.flowright'
 import { withRouter } from 'react-router-dom'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
-import { addKeyPair } from '../store'
+import { addPrivateKey, addPublicKey } from '../store'
 import Layout from '../components/Layout'
 import { makeStyles } from '@material-ui/styles'
+import { RequestEvents, ResponseEvents } from '../fixtures'
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function GenerateKeyPair(props) {
   const classes = useStyles(props)
-  const { addKeyPair, history } = props
+  const { addPrivateKey, addPublicKey, history } = props
   const [state, setState] = React.useState({
     userId: '',
     passphrase: ''
@@ -45,35 +46,27 @@ function GenerateKeyPair(props) {
   const onGerate = () => {
     // @ts-ignore
     window.ipcRenderer.send(
-      'put',
+      RequestEvents.GENERATE_KEY_PAIR,
       JSON.stringify({
-        action: 'GENERATE_KEY_PAIR',
-        data: {
-          userIds: [state.userId],
-          passphrase: state.passphrase
-        }
+        userIds: [state.userId],
+        passphrase: state.passphrase
       })
     )
   }
 
   const onData = (event, args) => {
     const data = JSON.parse(args)
-    console.log(data)
-    const { userId, publicKeyArmored, privateKeyArmored } = data
-    addKeyPair({
-      userId: userId,
-      publicKey: publicKeyArmored,
-      privateKey: privateKeyArmored
-    })
-    history.push('/keys')
+    const { privateKey, publicKey, ...rest } = data
+    addPrivateKey({ privateKey, ...rest })
+    addPublicKey({ publicKey, ...rest })
+    history.push('/')
   }
 
   React.useEffect(() => {
-    // @ts-ignore
-    window.ipcRenderer.on('data', onData)
+    (window as any).ipcRenderer.on(ResponseEvents.GENERATE_KEY_PAIR, onData)
 
     return () => {
-      ;(window as any).ipcRenderer.off('data', onData)
+      (window as any).ipcRenderer.off(ResponseEvents.GENERATE_KEY_PAIR, onData)
     }
   }, [])
 
@@ -137,7 +130,8 @@ function GenerateKeyPair(props) {
 GenerateKeyPair.defaultProps = {}
 
 const mapDispatchToProps = {
-  addKeyPair
+  addPrivateKey,
+  addPublicKey
 }
 
 export default flowRight([withRouter, connect(null, mapDispatchToProps)])(

@@ -1,4 +1,4 @@
-declare global {
-  interface Window { ipcRenderer: any }
-}
+// declare global {
+//   interface Window { ipcRenderer: any }
+// }
 

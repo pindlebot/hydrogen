@@ -19,14 +19,13 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function EditKeyPair (props) {
-  const { updatePrivateKey, history } = props
-
+function CreateKeyPair (props) {
+  const { updatePrivateKey, updatePublicKey, history } = props
   const classes = useStyles(props)
 
   const onSave = ({ privateKey, publicKey, ...rest }) => {
-    updatePrivateKey({ privateKey, ...rest })
-    updatePublicKey({ publicKey, ...rest })
+    updatePrivateKey({ ...rest, privateKey })
+    updatePublicKey({ ...rest, publicKey})
     history.push('/')
   }
 
@@ -39,14 +38,7 @@ function EditKeyPair (props) {
   )
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { privateKeys } = state
-  const { match: { params: { id } } } = ownProps
-  const privateKey = privateKeys[id]
-  return {
-    privateKey
-  }
-}
+const mapStateToProps = (state, ownProps) => ({})
 
 const mapDispatchToProps = {
   updatePrivateKey,
@@ -61,4 +53,4 @@ export default flowRight(
       mapDispatchToProps
     )
   ]
-)(EditKeyPair)
+)(CreateKeyPair)
