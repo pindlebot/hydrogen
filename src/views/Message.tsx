@@ -60,14 +60,17 @@ function Message(props: MessageProps) {
 
   const onClick = (evt: any) => {
     const privateKey = privateKeys[keyId]
-    const publicKey = publicKeys[recipientKeyId]
     const payload = {
       passphrase,
       message: value,
       privateKey: privateKey.privateKey,
-      publicKey: publicKey.publicKey
     }
-    console.log(payload)
+    if (!isPgpMessage) {
+      const publicKey = publicKeys[recipientKeyId]
+      // @ts-ignore
+      payload.publicKey = publicKey.publicKey
+    }
+
     // @ts-ignore
     const eventName = isPgpMessage ? RequestEvents.DECRYPT : RequestEvents.ENCRYPT
     ;(window as any).ipcRenderer.send(eventName, JSON.stringify(payload))

@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware } from 'redux'
-import { v4 } from 'uuid'
 import thunk from 'redux-thunk'
 import {
   REHYDRATE_STATE,
@@ -132,7 +131,7 @@ function rootReducer (state = initialState, action) {
     case SET_PUBLIC_KEYS:
       return {
         ...state,
-        pubicKeys: action.data
+        publicKeys: action.data
       }
     case SET_PRIVATE_KEYS:
       return {

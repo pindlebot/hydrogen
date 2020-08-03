@@ -3,10 +3,10 @@ import { Paper } from '@material-ui/core'
 import { connect } from 'react-redux'
 import flowRight from 'lodash.flowright'
 import { withRouter } from 'react-router-dom'
+import { makeStyles } from '@material-ui/styles'
 
 import { addPublicKey } from '../store'
 import Layout from '../components/Layout'
-import { makeStyles } from '@material-ui/styles'
 import KeyPairForm from '../components/KeyPairForm'
 
 const useStyles = makeStyles(theme => ({

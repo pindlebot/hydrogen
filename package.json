@@ -11,7 +11,10 @@
     "dev:electron": "parcel src/index.ts --out-dir build --target electron",
     "electron": "electron .",
     "build:ui": "parcel build src/index.html --public-url ./ --out-dir build",
-    "build:electron": "parcel build src/index.ts --out-dir build --target electron"
+    "build:electron": "parcel build src/index.ts --out-dir build --target electron",
+    "clean": "rimraf dist && rimraf build && rimraf .cache",
+    "build": "yarn build:ui && yarn build:electron && yarn dist",
+    "dev": "yarn dev:ui & yarn dev:electron & yarn electron"
   },
   "keywords": [],
   "author": {
@@ -50,6 +53,7 @@
     "eslint-plugin-import": "^2.20.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-static-files-copy": "^2.4.3",
+    "rimraf": "^3.0.2",
     "typescript": "^3.7.0"
   },
   "dependencies": {
@@ -64,7 +68,6 @@
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
-    "uuid": "^8.3.0"
+    "redux-thunk": "^2.3.0"
   }
 }

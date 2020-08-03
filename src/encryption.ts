@@ -34,19 +34,30 @@ export async function encrypt ({ message, passphrase, privateKey, publicKey }) {
 }
 
 export async function getKeyMetadata ({ armoredText }) {
-  console.log(armoredText)
   const { keys } = await openpgp.key.readArmored(armoredText)
   const [key] = keys
   const [userId] = key.getUserIds()
   const keyId = key.getKeyId()
   const fingerprint = key.getFingerprint()
   const creationTime = key.getCreationTime()
+  const algorithm = key.getAlgorithmInfo()
   return {
+    algorithm,
     creationTime,
     armoredText,
     userId,
     keyId,
     fingerprint
+  }
+}
+
+export async function getMessageMetadata ({ armoredText }) {
+  const message = await openpgp.message.readArmored(armoredText)
+  const encryptionKeyIds = message.getEncryptionKeyIds()
+  const signingKeyIds = message.getSigningKeyIds()
+  return {
+    encryptionKeyIds,
+    signingKeyIds
   }
 }
 
@@ -56,9 +67,11 @@ export async function generateKeyPair(options) {
   const keyId = key.getKeyId()
   const fingerprint = key.getFingerprint()
   const creationTime = key.getCreationTime()
+  const algorithm = key.getAlgorithmInfo()
   return {
     userId: userIds[0],
     creationTime,
+    algorithm,
     keyId,
     fingerprint,
     publicKey: publicKeyArmored,
